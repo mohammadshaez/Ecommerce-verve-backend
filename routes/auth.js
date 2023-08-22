@@ -8,7 +8,7 @@ router.post("/register", async (req, res) => {
     username: req.body.username,
     email: req.body.email,
     password: CryptoJS.AES.encrypt(
-      req.body.password,
+      req.body.confirmedPassword,
       process.env.PASSWORD_SECRET
     ).toString(),
   });
@@ -28,9 +28,11 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
+    console.log(user)
     if (!user) {
       return res.status(401).json("Invalid username");
     }
+
     const decryptedPassword = CryptoJS.AES.decrypt(
       user.password,
       process.env.PASSWORD_SECRET
